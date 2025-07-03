@@ -1,0 +1,185 @@
+# match3game.kv
+
+<MainMenuScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 20
+        padding: 40
+
+        Label:
+            text: "Игра 'Три в ряд'"
+            font_size: '48sp'
+            size_hint_y: 0.3
+
+        Button:
+            text: "Легкий (6x6)"
+            font_size: '24sp'
+            size_hint_y: 0.15
+            on_release: app.root.get_screen('menu').start_game(6, 6)
+
+        Button:
+            text: "Средний (8x8)"
+            font_size: '24sp'
+            size_hint_y: 0.15
+            on_release: app.root.get_screen('menu').start_game(8, 8)
+
+        Button:
+            text: "Сложный (10x10)"
+            font_size: '24sp'
+            size_hint_y: 0.15
+            on_release: app.root.get_screen('menu').start_game(10, 10)
+
+        Button:
+            text: "Таблица рекордов"
+            font_size: '24sp'
+            size_hint_y: 0.15
+            on_release: app.root.get_screen('menu').show_highscores()
+
+        # --- НОВАЯ КНОПКА "КАК ИГРАТЬ" ---
+        Button:
+            text: "Как играть"
+            font_size: '24sp'
+            size_hint_y: 0.15
+            on_release: app.root.get_screen('menu').show_how_to_play() # Вызываем метод из MainMenuScreen
+        # ---------------------------------
+
+        Label:
+            text: ""
+            size_hint_y: 0.1
+
+<GameScreen>:
+    name: 'game'
+    BoxLayout:
+        orientation: 'vertical'
+        
+        Label:
+            id: score_label
+            text: 'Счет: 0 / 0\nХодов: 0'
+            font_size: '24sp'
+            size_hint_y: 0.1
+            halign: 'center'
+            valign: 'middle'
+            text_size: self.size
+            
+        GridLayout:
+            id: board_layout
+            cols: root.cols
+            rows: root.rows
+            spacing: 2
+            size_hint_y: 0.8
+            on_size: root._draw_board()
+            
+        Button:
+            text: 'Главное меню'
+            size_hint_y: 0.1
+            on_release: app.root.current = 'menu'
+
+<GameOverScreen>:
+    name: 'game_over'
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 20
+        padding: 40
+        halign: 'center'
+        valign: 'middle'
+
+        Label:
+            id: status_label
+            text: ''
+            font_size: '64sp'
+            size_hint_y: 0.4
+            halign: 'center'
+            valign: 'middle'
+            text_size: self.size
+
+        Label:
+            id: message_label
+            text: ''
+            font_size: '32sp'
+            size_hint_y: 0.3
+            halign: 'center'
+            valign: 'middle'
+            text_size: self.size
+
+        Button:
+            text: 'Играть снова'
+            font_size: '24sp'
+            size_hint_y: 0.1
+            on_release: app.root.current = 'game'
+
+        Button:
+            text: 'Главное меню'
+            font_size: '24sp'
+            size_hint_y: 0.1
+            on_release: app.root.current = 'menu'
+
+<NameInputScreen>: # Новый экран для ввода имени
+    name: 'name_input'
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 20
+        padding: 40
+        halign: 'center'
+        valign: 'middle'
+
+        Label:
+            id: score_display_label
+            text: 'Поздравляем! Ваш счет: 0\nВведите ваше имя:'
+            font_size: '32sp'
+            size_hint_y: 0.4
+            halign: 'center'
+            valign: 'middle'
+            text_size: self.size
+            
+        TextInput:
+            id: name_input_field
+            hint_text: 'Ваше имя'
+            multiline: False
+            font_size: '24sp'
+            size_hint_y: 0.1
+            padding_y: [self.height / 2.0 - (self.line_height / 2.0) * len(self._lines), 0] # Центрирование текста
+            
+        Button:
+            text: 'Сохранить рекорд'
+            font_size: '24sp'
+            size_hint_y: 0.1
+            on_release: root.save_score(name_input_field.text) # Передаем текст из поля ввода
+
+        Button:
+            text: 'Пропустить (В главное меню)'
+            font_size: '24sp'
+            size_hint_y: 0.1
+            on_release: app.root.current = 'menu'
+
+
+<HighscoreScreen>: # Новый экран для таблицы рекордов
+    name: 'highscores'
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 20
+        padding: 40
+        halign: 'center'
+        valign: 'middle'
+
+        Label:
+            text: 'Таблица рекордов'
+            font_size: '48sp'
+            size_hint_y: 0.2
+            halign: 'center'
+            valign: 'middle'
+            text_size: self.size
+
+        Label:
+            id: highscore_display_label
+            text: root.highscore_text # Привязка к свойству highscore_text в классе
+            font_size: '24sp'
+            size_hint_y: 0.6
+            halign: 'center'
+            valign: 'top' # Выравнивание текста сверху
+            text_size: self.size
+
+        Button:
+            text: 'Главное меню'
+            font_size: '24sp'
+            size_hint_y: 0.1
+            on_release: app.root.current = 'menu'
